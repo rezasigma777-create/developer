@@ -10,21 +10,24 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # Hapus dulu kalau sudah ada
 rm -rf /app/qwen-gate
 
-# Clone Qwen Gate
+# Clone repo
 git clone https://github.com/youssefvdel/qwen-gate.git /app/qwen-gate
 cd /app/qwen-gate
 
-# Install dependencies
+# Install dependency
 bun install
 
-# Patch timeout menjadi 10 menit
-sed -i "s/QWEN_FETCH_TIMEOUT_MS: '30000'/QWEN_FETCH_TIMEOUT_MS: '600000'/" src/services/configService.ts
-sed -i 's/"QWEN_FETCH_TIMEOUT_MS": "30000"/"QWEN_FETCH_TIMEOUT_MS": "600000"/' config.json
-
-echo "===== CHECK PATCH ====="
+echo "===== SEBELUM PATCH ====="
 grep -n "QWEN_FETCH_TIMEOUT_MS" src/services/configService.ts || true
 grep -n "QWEN_FETCH_TIMEOUT_MS" config.json || true
-echo "======================="
+
+# Patch timeout
+sed -i "s/30000/600000/g" src/services/configService.ts
+sed -i "s/30000/600000/g" config.json
+
+echo "===== SESUDAH PATCH ====="
+grep -n "QWEN_FETCH_TIMEOUT_MS" src/services/configService.ts || true
+grep -n "QWEN_FETCH_TIMEOUT_MS" config.json || true
 
 RAILWAY_PORT="${PORT:-8080}"
 
@@ -41,5 +44,8 @@ fs.writeFileSync('config.json', JSON.stringify(cfg, null, 2));
 
 console.log('Patched HOST:', cfg.HOST, 'PORT:', cfg.PORT);
 "
+
+echo "===== CONFIG AKHIR ====="
+grep -n "QWEN_FETCH_TIMEOUT_MS" config.json || true
 
 bun start
