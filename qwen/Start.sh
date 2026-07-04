@@ -14,6 +14,9 @@ cd /app/qwen-gate
 
 bun install
 
+# Patch timeout Qwen menjadi 10 menit
+sed -i "s/QWEN_FETCH_TIMEOUT_MS: '30000'/QWEN_FETCH_TIMEOUT_MS: '600000'/" src/services/configService.ts
+
 RAILWAY_PORT="${PORT:-8080}"
 bun -e "
 const fs = require('fs');
